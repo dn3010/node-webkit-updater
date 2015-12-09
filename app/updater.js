@@ -70,43 +70,61 @@
    * @return {Request} Request - stream, the stream contains `manifest` property with new manifest and 'content-length' property with the size of package.
    */
   updater.prototype.download = function(newManifest, cb){
+    var calledBack = false;
     var manifest = newManifest || this.manifest;
     var url = manifest.packages[platform].url;
+    var options = this.options;
+    var destinationPath = '';
+
     var pkg = request(url, function(err, response){
-        if(err){
-            cb(err);
-        }
-        if(response && (response.statusCode < 200 || response.statusCode >= 300)){
-            pkg.abort();
-            return cb(new Error(response.statusCode));
-        }
+      if (err && !calledBack){
+        calledBack = true;
+        return cb(err, null);
+      }
+
+      if(response && (response.statusCode < 200 || response.statusCode >= 300) && !calledBack){
+        pkg.abort();
+        calledBack = true;
+        return cb(new Error(response.statusCode));
+      }
     });
+
     pkg.on('response', function(response){
-      if(response && response.headers && response.headers['content-length']){
-          pkg['content-length'] = response.headers['content-length'];
-        }
+      var filename = response.headers['content-disposition'] ||
+                     response.headers['Content-Disposition'] ||
+                     path.basename(response.request.uri.path);
+      destinationPath = path.join(options.temporaryDirectory, filename);
+
+      fs.unlink(destinationPath, function() {
+        var stream = response.pipe(fs.createWriteStream(destinationPath));
+
+        stream.on('error', function(error) {
+          if (!calledBack){
+            calledBack = true;
+            cb(error, null);
+          }
+        });
+
+        stream.on('end', function() {
+          appDownloaded();
+        });
+      });
     });
-    var filename = path.basename(url),
-        destinationPath = path.join(this.options.temporaryDirectory, filename);
-    // download the package to template folder
-    fs.unlink(path.join(this.options.temporaryDirectory, filename), function(){
-      pkg.pipe(fs.createWriteStream(destinationPath));
-      pkg.resume();
+
+    pkg.on('end', function(){
+      appDownloaded();
     });
-    pkg.on('error', cb);
-    pkg.on('end', appDownloaded);
-    pkg.pause();
 
     function appDownloaded(){
       process.nextTick(function(){
-        if(pkg.response.statusCode >= 200 && pkg.response.statusCode < 300){
+        if(pkg.response.statusCode >= 200 && pkg.response.statusCode < 300 && !calledBack){
+          callbedBack = true;
           cb(null, destinationPath);
         }
       });
     }
     return pkg;
   };
-
 
   /**
    * Returns executed application path
