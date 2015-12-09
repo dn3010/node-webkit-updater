@@ -65,11 +65,11 @@
 
   /**
    * Downloads the new app to a template folder
-   * @param  {Function} cb - called when download completes. Callback arguments: error, downloaded filepath
    * @param  {Object} newManifest - see [manifest schema](#manifest-schema) below
+   * @param  {Function} cb - called when download completes. Callback arguments: error, downloaded filepath
    * @return {Request} Request - stream, the stream contains `manifest` property with new manifest and 'content-length' property with the size of package.
    */
-  updater.prototype.download = function(cb, newManifest){
+  updater.prototype.download = function(newManifest, cb){
     var manifest = newManifest || this.manifest;
     var url = manifest.packages[platform].url;
     var pkg = request(url, function(err, response){
@@ -147,7 +147,7 @@
    * @param {function} cb - Callback arguments: error, unpacked directory
    * @param {object} manifest
    */
-  updater.prototype.unpack = function(filename, cb, manifest){
+  updater.prototype.unpack = function(filename, manifest, cb){
     pUnpack[platform](filename, cb, manifest, this.options.temporaryDirectory);
   };
 
