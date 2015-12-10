@@ -25,7 +25,8 @@
   function updater(manifest, options){
     this.manifest = manifest;
     this.options = {
-      temporaryDirectory: options && options.temporaryDirectory || os.tmpdir()
+      temporaryDirectory: options && options.temporaryDirectory || os.tmpdir(),
+      platform: platform
     };
   }
 
