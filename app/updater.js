@@ -97,6 +97,7 @@
 
       fs.unlink(destinationPath, function() {
         var stream = response.pipe(fs.createWriteStream(destinationPath));
+        pkg.resume();
 
         stream.on('error', function(error) {
           if (!calledBack){
@@ -105,15 +106,12 @@
           }
         });
 
-        stream.on('end', function() {
+        response.on('end', function() {
           appDownloaded();
         });
       });
     });
-
-    pkg.on('end', function(){
-      appDownloaded();
-    });
+    pkg.pause();
 
     function appDownloaded(){
       process.nextTick(function(){
