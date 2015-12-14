@@ -7,6 +7,7 @@
   var ncp = require('ncp');
   var del = require('del');
   var semver = require('semver');
+  var zlib = require('zlib');
   
   var platform = process.platform;
   platform = /^win/.test(platform)? 'win' : /^darwin/.test(platform)? 'mac' : 'linux' + (process.arch == 'ia32' ? '32' : '64');
@@ -97,7 +98,14 @@
       destinationPath = path.join(options.temporaryDirectory, filename);
 
       fs.unlink(destinationPath, function() {
-        var stream = response.pipe(fs.createWriteStream(destinationPath));
+        var stream = null;
+        var destination = fs.createWriteStream(destinationPath);
+        if (response.headers['content-encoding'] === 'gzip'){
+          stream = response.pipe(zlib.createGunzip()).pipe(destination);
+        }
+        else {
+          stream = response.pipe(destination);
+        }
         pkg.resume();
 
         stream.on('error', function(error) {
