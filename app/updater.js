@@ -439,7 +439,7 @@
       function deleteApp(cb){
         if (options && options.deleteApp === false) {
           if (cb) {
-            cb();
+            cb(null);
           }
         } else {
           del(to, {force: true}, cb);
@@ -450,7 +450,7 @@
           setTimeout(deleteApp, 100, appDeleted);
           return;
         }
-        cb();
+        cb(null);
       }
     },
     /**
