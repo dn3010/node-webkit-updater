@@ -282,6 +282,27 @@
             });
           };
 
+          // unzip = function() {
+          //   var done = false;
+          //   var stream = fs.createReadStream(path.resolve(filename))
+          //     .pipe(zlib.unzip())
+          //     .pipe(createWriteStream(destinationDirectory));
+
+          //   stream.on('error', function(error) => {
+          //     if (!done){
+          //       done = true;
+          //       return cb(err);
+          //     }
+          //   });
+
+          //   stream.on('end', function() => {
+          //     if (!done){
+          //       done = true;
+          //       return cb(null, path.join(destinationDirectory, getExecPathRelativeToPackage(manifest)));
+          //     }
+          //   });
+          // }
+
       fs.exists(destinationDirectory, function(exists){
         if(exists) {
           del(destinationDirectory, {force: true}, function (err) {
@@ -297,7 +318,6 @@
           unzip();
         }
       });
-
     },
     /**
      * @private
@@ -344,18 +364,18 @@
     /**
      * @private
      */
-    win: function(appPath, args, options, cb){
-      return run(appPath, args, options, cb);
+    win: function(appPath, args, options){
+      return run(appPath, args, options);
     },
     /**
      * @private
      */
-    linux32: function(appPath, args, options, cb){
+    linux32: function(appPath, args, options){
       var appExec = path.join(appPath, path.basename(this.getAppExec()));
       fs.chmodSync(appExec, 0755)
       if(!options) options = {};
       options.cwd = appPath;
-      return run(appPath + "/"+path.basename(this.getAppExec()), args, options, cb);
+      return run(appPath + "/"+path.basename(this.getAppExec()), args, options);
     }
   };
 
@@ -382,7 +402,7 @@
    * @param {function} cb - Callback arguments: error
    * @param {object} options - Optional. Can be set to {deleteApp: false} to prevent original app folder to be deleted in windows
    */
-  updater.prototype.install = function(copyPath, cb, options){
+  updater.prototype.install = function(copyPath, options, cb){
     pInstall[platform].apply(this, arguments);
   };
 
@@ -390,13 +410,13 @@
     /**
      * @private
      */
-    mac: function(to, cb, options){
+    mac: function(to, options, cb){
       kopeer(this.getAppPath(), to, cb);
     },
     /**
      * @private
      */
-    win: function(to, cb, options){
+    win: function(to, options, cb){
       var self = this;
       var errCounter = 10;
       deleteApp(appDeleted);
@@ -425,7 +445,7 @@
           del(to, {force: true}, cb);
         }
       }
-      function appCopied(err){  
+      function appCopied(err){
         if(err) {
           setTimeout(deleteApp, 100, appDeleted);
           return;
@@ -436,7 +456,7 @@
     /**
      * @private
      */
-    linux32: function(to, cb, options){
+    linux32: function(to, options, cb){
       kopeer(this.getAppPath(), to, cb);
     }
   };

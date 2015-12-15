@@ -91,14 +91,14 @@ Runs installer
 
 **Returns**: `function`  
 <a name="updater#install"></a>
-####updater.install(copyPath, cb)
+####updater.install(copyPath, options, cb)
 Installs the app (copies current application to `copyPath`)
 
 **Params**
 
 - copyPath `string`  
-- cb `function` - Callback arguments: error  
 - options `object` - Optional. Can be set to {deleteApp: false} to prevent original app folder to be deleted in windows  
+- cb `function` - Callback arguments: error  
 
 <a name="updater#run"></a>
 ####updater.run(execPath, args, options)

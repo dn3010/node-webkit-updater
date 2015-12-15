@@ -44,9 +44,10 @@ else { // if no arguments were passed to the app
                     // ------------- Step 3 -------------
                     upd.unpack(filename, manifest, function(error, newAppPath) {
                         if (!error) {
+                            var newAppDir = path.dirname(newAppPath); 
 
                             // ------------- Step 4 -------------
-                            upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
+                            upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()], {cwd: newAppDir});
                             gui.App.quit();
                         }
                     });
