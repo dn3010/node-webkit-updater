@@ -4,7 +4,7 @@
   var fs = require('fs');
   var exec = require('child_process').exec;
   var spawn = require('child_process').spawn;
-  var ncp = require('ncp');
+  var kopeer = require('kopeer');
   var del = require('del');
   var semver = require('semver');
   var zlib = require('zlib');
@@ -390,7 +390,7 @@
      * @private
      */
     mac: function(to, cb){
-      ncp(this.getAppPath(), to, cb);
+      kopeer(this.getAppPath(), to, cb);
     },
     /**
      * @private
@@ -412,7 +412,7 @@
           }
         }
         else {
-          ncp(self.getAppPath(), to, appCopied);
+          kopeer(self.getAppPath(), to, appCopied);
         }
       }
       function deleteApp(cb){
@@ -430,7 +430,7 @@
      * @private
      */
     linux32: function(to, cb){
-      ncp(this.getAppPath(), to, cb);
+      kopeer(this.getAppPath(), to, cb);
     }
   };
   pInstall.linux64 = pInstall.linux32;

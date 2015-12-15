@@ -15,7 +15,7 @@
   },
   "main": "app://updapp/index.html",
   "dependencies": {
-    "ncp": "^2.0.0",
+    "kopeer": "1.0.0-next",
     "request": "^2.67.0",
     "del": "~0.1.2",
     "semver": "^5.1.0"
