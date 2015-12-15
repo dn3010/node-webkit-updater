@@ -98,6 +98,7 @@ Installs the app (copies current application to `copyPath`)
 
 - copyPath `string`  
 - cb `function` - Callback arguments: error  
+- options `object` - Optional. Can be set to {deleteApp: false} to prevent original app folder to be deleted in windows  
 
 <a name="updater#run"></a>
 ####updater.run(execPath, args, options)

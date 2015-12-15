@@ -380,8 +380,9 @@
    * Installs the app (copies current application to `copyPath`)
    * @param {string} copyPath
    * @param {function} cb - Callback arguments: error
+   * @param {object} options - Optional. Can be set to {deleteApp: false} to prevent original app folder to be deleted in windows
    */
-  updater.prototype.install = function(copyPath, cb){
+  updater.prototype.install = function(copyPath, cb, options){
     pInstall[platform].apply(this, arguments);
   };
 
@@ -389,15 +390,15 @@
     /**
      * @private
      */
-    mac: function(to, cb){
+    mac: function(to, cb, options){
       kopeer(this.getAppPath(), to, cb);
     },
     /**
      * @private
      */
-    win: function(to, cb){
+    win: function(to, cb, options){
       var self = this;
-      var errCounter = 50;
+      var errCounter = 10;
       deleteApp(appDeleted);
 
       function appDeleted(err){
@@ -416,12 +417,18 @@
         }
       }
       function deleteApp(cb){
-        del(to, {force: true}, cb);
+        if (options && options.deleteApp === false) {
+          if (cb) {
+            cb();
+          }
+        } else {
+          del(to, {force: true}, cb);
+        }
       }
-      function appCopied(err){
-        if(err){
+      function appCopied(err){  
+        if(err) {
           setTimeout(deleteApp, 100, appDeleted);
-          return
+          return;
         }
         cb();
       }
@@ -429,7 +436,7 @@
     /**
      * @private
      */
-    linux32: function(to, cb){
+    linux32: function(to, cb, options){
       kopeer(this.getAppPath(), to, cb);
     }
   };
