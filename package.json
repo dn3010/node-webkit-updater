@@ -26,7 +26,7 @@
     "test": "node node_modules/grunt-cli/bin/grunt clean mochaTest"
   },
   "dependencies": {
-    "kopeer": "1.0.0-next",
+    "kopeer": "^1.0.1",
     "request": "~2.67.0",
     "tar.gz": "^0.1.1",
     "del": "~0.1.2",
